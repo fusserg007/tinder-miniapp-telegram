@@ -1,0 +1,86 @@
+services:
+  mongo:
+    image: mongo:4.4.18
+    restart: always
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - tinder_network
+
+  object-storage:
+    image: bitnami/minio:latest
+    restart: always
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_SKIP_CLIENT=yes
+    volumes:
+      - minio_storage:/data
+    networks:
+      - tinder_network
+
+  imgproxy:
+    image: darthsim/imgproxy
+    restart: always
+    environment:
+      - IMGPROXY_USE_S3=true
+      - IMGPROXY_S3_ENDPOINT=http://object-storage:9000
+      - IMGPROXY_KEY=${IMGPROXY_KEY}
+      - IMGPROXY_SALT=${IMGPROXY_SALT}
+    networks:
+      - tinder_network
+    depends_on:
+      - object-storage
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      - PORT=4000
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongo:27017/dating_app
+      - AWS_ENDPOINT=http://object-storage:9000
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_BUCKET=${AWS_BUCKET}
+      - BOT_TOKEN=${BOT_TOKEN}
+    networks:
+      - tinder_network
+    depends_on:
+      - mongo
+      - object-storage
+
+  frontend:
+    build:
+      context: ./tg-web-app
+      dockerfile: Dockerfile
+      args:
+        VITE_BACKEND_URL: ${VITE_BACKEND_URL}
+        VITE_BOT_USERNAME: ${VITE_BOT_USERNAME}
+    restart: always
+    networks:
+      - tinder_network
+
+  nginx:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./nginx/nginx.timeweb.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - tinder_network
+    depends_on:
+      - frontend
+      - backend
+      - imgproxy
+
+volumes:
+  mongo_data:
+  minio_storage:
+
+networks:
+  tinder_network:
+    driver: bridge
