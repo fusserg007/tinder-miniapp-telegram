@@ -1,0 +1,89 @@
+services:
+  mongo:
+    image: mongo:4.4.18
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - tinder_network
+
+  object-storage:
+    image: bitnami/minio:latest
+    restart: always
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-kundin}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-very-secret-password}
+      - MINIO_SKIP_CLIENT=yes
+    volumes:
+      - minio_storage:/data
+    networks:
+      - tinder_network
+
+  imgproxy:
+    image: darthsim/imgproxy
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - IMGPROXY_USE_S3=true
+      - IMGPROXY_S3_ENDPOINT=http://object-storage:9000
+      - IMGPROXY_KEY=${IMGPROXY_KEY:-random32charactersstring123456789}
+      - IMGPROXY_SALT=${IMGPROXY_SALT:-another32charactersstring123456789}
+    networks:
+      - tinder_network
+    depends_on:
+      - object-storage
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://mongo:27017/dating_app
+      - AWS_ENDPOINT=http://object-storage:9000
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-kundin}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-very-secret-password}
+      - AWS_BUCKET=${AWS_BUCKET:-at-first-sight}
+      - BOT_TOKEN=${BOT_TOKEN}
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - tinder_network
+    depends_on:
+      - mongo
+      - object-storage
+
+  frontend:
+    build:
+      context: ./tg-web-app
+      dockerfile: Dockerfile.dev
+    restart: always
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_BACKEND_URL=http://localhost:4000
+      - VITE_BOT_USERNAME=${VITE_BOT_USERNAME}
+    volumes:
+      - ./tg-web-app:/app
+      - /app/node_modules
+    networks:
+      - tinder_network
+
+volumes:
+  mongo_data:
+  minio_storage:
+
+networks:
+  tinder_network:
+    driver: bridge
