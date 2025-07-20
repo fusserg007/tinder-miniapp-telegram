@@ -1,0 +1,114 @@
+.chat {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--tg-theme-bg-color, white);
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+}
+
+.no-messages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1rem;
+  min-height: 50vh;
+}
+
+.no-messages-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.no-messages p {
+  margin: 0;
+  color: var(--tg-theme-hint-color, #999);
+  font-size: 1.1rem;
+}
+
+.chat-input {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--tg-theme-bg-color, white);
+  border-top: 1px solid var(--tg-theme-section-separator-color, #e5e5e5);
+  padding: 1rem;
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+}
+
+.input-container {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  background: var(--tg-theme-secondary-bg-color, #f8f9fa);
+  border-radius: 20px;
+  padding: 8px 12px;
+}
+
+.input-container textarea {
+  flex: 1;
+  border: none;
+  background: transparent;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.4;
+  max-height: 100px;
+  color: var(--tg-theme-text-color, #000);
+}
+
+.input-container textarea::placeholder {
+  color: var(--tg-theme-hint-color, #999);
+}
+
+.send-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--tg-theme-button-color, #007aff);
+  color: var(--tg-theme-button-text-color, white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+
+.send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.send-btn:not(:disabled):hover {
+  opacity: 0.8;
+}
+
+/* Автоматическое изменение высоты textarea */
+.input-container textarea {
+  min-height: 20px;
+}
+
+@media (max-width: 480px) {
+  .chat-messages {
+    padding: 0.5rem;
+  }
+  
+  .chat-input {
+    padding: 0.75rem;
+  }
+}

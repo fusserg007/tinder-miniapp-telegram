@@ -1,0 +1,125 @@
+.matches {
+  padding: 1rem;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  min-height: 100vh;
+}
+
+.matches-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.matches-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--tg-theme-text-color, #000);
+}
+
+.no-matches {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1rem;
+  min-height: 50vh;
+}
+
+.no-matches-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.no-matches h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  color: var(--tg-theme-text-color, #000);
+}
+
+.no-matches p {
+  margin: 0 0 2rem 0;
+  color: var(--tg-theme-hint-color, #999);
+  line-height: 1.5;
+}
+
+.matches-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.match-card {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background: var(--tg-theme-secondary-bg-color, #f8f9fa);
+  border-radius: 16px;
+  text-decoration: none;
+  color: var(--tg-theme-text-color, #000);
+  transition: transform 0.2s, background 0.2s;
+}
+
+.match-card:hover {
+  transform: translateY(-2px);
+  background: var(--tg-theme-section-bg-color, #fff);
+}
+
+.match-photo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.match-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.match-info {
+  flex: 1;
+}
+
+.match-info h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.match-info p {
+  margin: 0 0 0.25rem 0;
+  color: var(--tg-theme-hint-color, #999);
+  font-size: 0.9rem;
+}
+
+.match-info small {
+  color: var(--tg-theme-hint-color, #999);
+  font-size: 0.8rem;
+}
+
+.match-arrow {
+  font-size: 1.5rem;
+  color: var(--tg-theme-hint-color, #999);
+  margin-left: 1rem;
+}
+
+@media (max-width: 480px) {
+  .matches {
+    padding: 0.5rem;
+  }
+  
+  .match-card {
+    padding: 0.75rem;
+  }
+  
+  .match-photo {
+    width: 50px;
+    height: 50px;
+    margin-right: 0.75rem;
+  }
+}
